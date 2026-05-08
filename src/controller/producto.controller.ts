@@ -7,7 +7,7 @@ export const agregarProducto = async(req:Request, res:Response):Promise<void>=>{
     console.log(req.body)
 
     try {
-        const imagenURL  = `/uploads/producto/${req.file.filename}`
+        const imagenURL = req.file.path
 
         const productos = await createProducto(imagenURL, nombre, descripcion, precio, categoria, rating, resenas, estado, adminId)
 
