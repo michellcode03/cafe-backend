@@ -1,39 +1,31 @@
 import multer from "multer";
 import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
 
-
-//manda la direccion donde se guarda las imagenes
-const direccion = multer.diskStorage({
-    destination:(req, file, cb)=>{
-       cb(null, 'uploads/producto/')
-    },
-
-    //guarda los datos de la imagen
-    filename:(req, file, cb) =>{
-        //definimos el nombre del archivo es decir el nombre que contenera
-        //la imagen, tiene que ser unico, por eso aleatorio
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)//90909
-        //crea un valor unico basado en la fecha y un numero aleatorio
-        //aqui le mandamos la imagen, ya con el nombre y fecha y identificador unico
-        const ext = path.extname(file.originalname)//PNG el tipo de imagen que se le envia
-
-        //le mando como se llamara la imagen, producto-90909-9090.png // esto es un ejemplo
-        cb(null, 'producto-' + uniqueSuffix + ext)
-    }
+// Configuracion de Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-//luego filtramos las imagenes
+// Guardamos en Cloudinary en vez de disco
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'cafe/productos',
+        allowed_formats: ['jpeg', 'jpg', 'png', 'gif', 'webp'],
+    } as any
+})
+
 const fileFilter = (req: any, file: any, cb: any) => {
-    const allowedExtensions = /jpeg|jpg|png|gif|webp/ //tipo de imagesn que se pueden recibir
-    //define que tipo de imagenes estan permitidas
+    const allowedExtensions = /jpeg|jpg|png|gif|webp/
     const extname = allowedExtensions.test(
         path.extname(file.originalname).toLowerCase()
-        // Si el archivo se llama "foto.PNG"
-        // Devuelve: ".PNG"
     )
     const mimetype = allowedExtensions.test(file.mimetype)
 
-    //funion que valida el archivo antes de guardarlo
     if (mimetype && extname) {
         cb(null, true)
     } else {
@@ -42,9 +34,7 @@ const fileFilter = (req: any, file: any, cb: any) => {
 }
 
 export const uploadProductImage = multer({
-    storage: direccion,
+    storage: storage,
     fileFilter: fileFilter,
-    //Se exporta el middleware configurado para ser usado en las rutas del backend
-    //Limita el tamaño máximo del archivo a 5 MB para proteger el servidor.
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+    limits: { fileSize: 5 * 1024 * 1024 }
 })
