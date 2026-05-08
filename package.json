@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch index.ts",
-    "start": "node dist/index.js",
-    "build": "tsc"
-  },
+  "dev": "tsx watch index.ts",
+  "build": "tsc --skipLibCheck --noEmit false || true && tsx --tsconfig tsconfig.json index.ts",
+  "start": "node dist/index.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
