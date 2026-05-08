@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
+"scripts": {
   "dev": "tsx watch index.ts",
-  "build": "tsc --skipLibCheck --noEmit false || true && tsx --tsconfig tsconfig.json index.ts",
-  "start": "node dist/index.js"
+  "build": "echo 'no build needed'",
+  "start": "tsx index.ts"
 },
   "keywords": [],
   "author": "",
